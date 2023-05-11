@@ -1,0 +1,1 @@
+python src/train.py --batch_size 16 --model_name QLSTM --devices 16 --accelerator cpu --n_qubits 4

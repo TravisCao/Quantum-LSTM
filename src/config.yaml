@@ -1,0 +1,49 @@
+xx-QLSTM:
+  input_dim: 5
+  hidden_dim: 2
+  n_qubits: 4
+  depth: 1
+  diff_method: "best"
+  model_name: "xx-QLSTM"
+  encoding: "arcsin-arccos" # "original" | "No-H" | "No-Square" | "arcsin-arccos" | "5"
+  vqc: "5" # "original" | "5" | "10" | "18"
+  find_unused_parameters: True
+  dropout: 0
+  four_linear_before_vqc: False
+  combine_lienar_after_vqc: False
+
+QLSTM:
+  model_name: "QLSTM"
+  input_dim: 5
+  hidden_dim: 2
+  diff_method: "parameter-shift"
+  n_qubits: 7
+  depth: 1
+  # TODO: measurement
+  encoding: "original" # "original" | "No-H" | "No-Square" | "arcsin-arccos" | "5"
+  vqc: "original" # "original" | "5" | "10" | "18"
+  find_unused_parameters: True
+  dropout: 0.5
+
+LSTM:
+  model_name: "LSTM"
+  n_qubits: 0
+  input_dim: 5
+  hidden_dim: 3
+  depth: 1
+  find_unused_parameters: False
+  dropout: 0
+
+data: "period2" # "period1" | "period2" | "all"
+only_price: False
+MAX_PRICE: 33.5
+MIN_PRICE: 3.93
+devices: 20
+lr: 0.001
+n_timestep: 3
+backend: "lightning.qubit"
+accelerator: "cpu"
+seed: 42
+batch_first: False
+target_size: 1
+batch_size: 1
