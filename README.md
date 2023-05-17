@@ -46,14 +46,14 @@ This is the dataset of EU carbon market from 2014.01.01 to 2020.12.31.
 
 ### Column Names
 
-* Price: carbon price
-* High: highest price
-* Low: lowest price
-* Open: opening price
-* Vol.: trading volume
-* Week: week number of the year
-* Year: year of the day
-* t: remaining days to last open day of the year
+* `Price`: carbon price
+* `High`: highest price
+* `Low`: lowest price
+* `Open`: opening price
+* `Vol`: trading volume
+* `Week`: week number of the year
+* `Year`: year of the day
+* `t`: remaining days to the last open day of the year
 
 ### CSV files
 
