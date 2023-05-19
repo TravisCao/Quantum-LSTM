@@ -5,11 +5,11 @@ by Yuji Cao, Xiyuan Zhou, Xiang Fei, Huan Zhao, Wenxuan Liu and Junhua Zhao.
 
 This repository contains the data and source code used to produce the results presented in:
 
-> "[Title of the Paper and/or Preprint]"
+> Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon Price Forecasting
 
 ## Abstract
 
-[Abstract of the paper].
+Accurate carbon price forecasting is important for investors and policymakers to make decisions in the carbon market. With the development of quantum computing in recent years, quantum machine learning has shown great potential in a wide range of areas. This paper proposes a hybrid quantum computing based carbon price forecasting framework using an improved quantum machine learning model. The proposed Linear-layer-enhanced Quantum Long Short-Term Memory (L-QLSTM) model employs the linear layers before and after the variational quantum circuits of Quantum Long ShortTerm Memory (QLSTM), to extract features, reduce the number of quantum bits and amplify the quantum advantages. The parameter sharing method of the linear layer and the strongly entangled controlled-Z quantum circuit of the variational layer are applied to reduce the parameters and improve the learning performance respectively. We test and evaluate the L-QLSTM based on the practical data of European Union Emission Trading from 2017 to 2020. Results show that the proposed L-QLSTM method can greatly improve the learning accuracy compared to the QLSTM method.
 
 ### Dependencies
 
