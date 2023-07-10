@@ -16,7 +16,7 @@ Accurate carbon price forecasting is important for investors and policymakers to
 Use requirements.txt to install the dependencies for reproducing the code.
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirement.txt
 ```
 
 The experimental result is stored by [WandB](https://wandb.ai/site). You need to register your account first. See the quickstart of WandB [here](https://docs.wandb.ai/quickstart).
