@@ -1,5 +1,12 @@
+Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon PRice Forcasting
+--------------------------------------------------------------------------------
 
-# L-QLSTM
+[![DOI](https://zenodo.org/badge/DOI/10.1007/s42484-023-00115-2.svg)](http://dx.doi.org/10.1007/s42484-023-00115-2)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-red.svg)](https://www.python.org/downloads/release/python-380/)
+
+
+
+# Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon PRice Forcasting
 
 by Yuji Cao, Xiyuan Zhou, Xiang Fei, Huan Zhao, Wenxuan Liu and Junhua Zhao.
 
