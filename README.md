@@ -1,18 +1,14 @@
-Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon PRice Forcasting
---------------------------------------------------------------------------------
-
-[![DOI](https://zenodo.org/badge/DOI/10.1007/s42484-023-00115-2.svg)](http://dx.doi.org/10.1007/s42484-023-00115-2)
-[![Python 3.8](https://img.shields.io/badge/python-3.8-red.svg)](https://www.python.org/downloads/release/python-380/)
-
-
-
 # Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon PRice Forcasting
 
-by Yuji Cao, Xiyuan Zhou, Xiang Fei, Huan Zhao, Wenxuan Liu and Junhua Zhao.
+<p align="center">
+  <a href="http://dx.doi.org/10.1007/s42484-023-00115-2" alt="DOI">
+    <img src="https://zenodo.org/badge/DOI/10.1007/s42484-023-00115-2.svg" /></a>
+  <img src ="https://img.shields.io/badge/-Quantum Machine Intelligence-green"/>
+  <a href="https://www.python.org/downloads/release/python-380/" alt="Python 3.8">
+    <img src="https://img.shields.io/badge/python-3.8-red.svg" /></a>
 
-This repository contains the data and source code used to produce the results presented in:
 
-> Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon Price Forecasting
+The official source code for [**Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon Price Forecasting**](http://dx.doi.org/10.1007/s42484-023-00115-2), accepted at Quantum Machine Intelligence (July 2023).
 
 ## Abstract
 
