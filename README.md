@@ -48,8 +48,6 @@ python src/run_lstm.py --seed 1 --data period2 --hidden_dim 3
 
 ## Data
 
----
-
 This is the dataset of EU carbon market from 2014.01.01 to 2020.12.31.
 
 ### Column Names
