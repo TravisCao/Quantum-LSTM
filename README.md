@@ -1,4 +1,4 @@
-# Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon PRice Forcasting
+# Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon Price Forcasting
 
 <p align="center">
   <a href="http://dx.doi.org/10.1007/s42484-023-00115-2" alt="DOI">
