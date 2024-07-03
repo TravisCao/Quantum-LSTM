@@ -19,6 +19,21 @@ Accurate carbon price forecasting is important for investors and policymakers to
   <img width="85%" src="img/L-QLSTM.png">
 </p>
 
+## Cite the paper
+
+```
+@article{cao2023linear,
+  title={Linear-layer-enhanced quantum long short-term memory for carbon price forecasting},
+  author={Cao, Yuji and Zhou, Xiyuan and Fei, Xiang and Zhao, Huan and Liu, Wenxuan and Zhao, Junhua},
+  journal={Quantum Machine Intelligence},
+  volume={5},
+  number={2},
+  pages={26},
+  year={2023},
+  publisher={Springer}
+}
+```
+
 ### Dependencies
 
 Use requirements.txt to install the dependencies for reproducing the code.
