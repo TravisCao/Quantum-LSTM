@@ -33,8 +33,9 @@ This code implements the quantum LSTM for price forecasting problems. By changin
 ```
 
 ### Dependencies
+python == 3.8
 
-Use requirements.txt to install the dependencies for reproducing the code.
+Use requirements.txt to install the dependencies for reproducing the code. 
 
 ```bash
 pip install -r requirement.txt
