@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qlstm"
+version = "0.1.0"
+description = "Quantum and linear-enhanced quantum LSTM layers for PyTorch, with a torch.nn.LSTM-compatible API."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Yuji Cao", email = "travisyjcao@gmail.com" }]
+keywords = [
+    "quantum-machine-learning",
+    "quantum-computing",
+    "lstm",
+    "recurrent-neural-network",
+    "pennylane",
+    "pytorch",
+    "time-series",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.0",
+    "pennylane>=0.38",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[project.urls]
+Homepage = "https://github.com/TravisCao/Quantum-LSTM"
+Repository = "https://github.com/TravisCao/Quantum-LSTM"
+Paper = "https://doi.org/10.1007/s42484-023-00115-2"
+Issues = "https://github.com/TravisCao/Quantum-LSTM/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["qlstm"]
+
+[tool.hatch.build.targets.sdist]
+include = ["qlstm", "tests", "examples", "README.md", "LICENSE", "CITATION.cff"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

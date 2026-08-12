@@ -1,25 +1,161 @@
-# Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon Price Forcasting
+# qlstm — Quantum LSTM layers for PyTorch
 
 <p align="center">
-  <a href="http://dx.doi.org/10.1007/s42484-023-00115-2" alt="DOI">
-    <img src="https://zenodo.org/badge/DOI/10.1007/s42484-023-00115-2.svg" /></a>
-  <img src ="https://img.shields.io/badge/-Quantum Machine Intelligence-green"/>
-  <a href="https://www.python.org/downloads/release/python-380/" alt="Python 3.8">
-    <img src="https://img.shields.io/badge/python-3.8-red.svg" /></a>
+  <a href="https://pypi.org/project/qlstm/"><img src="https://img.shields.io/pypi/v/qlstm.svg" alt="PyPI"></a>
+  <a href="https://github.com/TravisCao/Quantum-LSTM/actions/workflows/ci.yml"><img src="https://github.com/TravisCao/Quantum-LSTM/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://pypi.org/project/qlstm/"><img src="https://img.shields.io/pypi/pyversions/qlstm.svg" alt="Python versions"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://doi.org/10.1007/s42484-023-00115-2"><img src="https://zenodo.org/badge/DOI/10.1007/s42484-023-00115-2.svg" alt="DOI"></a>
 </p>
 
-
-The official source code for [**Linear-Layer-Enhanced Quantum Long Short-Term Memory for Carbon Price Forecasting**](http://dx.doi.org/10.1007/s42484-023-00115-2), accepted at Quantum Machine Intelligence (July 2023).
+`qlstm` is a small PyTorch library that provides a quantum long short-term memory
+(LSTM) layer with the same call signature as `torch.nn.LSTM`. Each of the four
+LSTM gates is a variational quantum circuit, so you can drop a quantum recurrent
+layer into an existing model by changing one line. It packages the model from
+[Cao et al., *Linear-layer-enhanced quantum long short-term memory for carbon
+price forecasting*, Quantum Machine Intelligence (2023)](https://doi.org/10.1007/s42484-023-00115-2)
+as a reusable, tested component.
 
 <p align="center">
-  <img width="85%" src="img/L-QLSTM.png">
+  <img width="80%" src="img/L-QLSTM.png" alt="L-QLSTM architecture">
 </p>
 
-This code implements the quantum LSTM for price forecasting problems. By changing the data, you can also execute it for other kinds of forecasting or regression problems.
+## Install
 
-## Cite the paper
-
+```bash
+pip install qlstm
 ```
+
+This pulls in PyTorch and [PennyLane](https://pennylane.ai/). Python 3.10 or
+newer is required.
+
+## Quickstart
+
+```python
+import torch
+from qlstm import LQLSTM
+
+# Same interface as torch.nn.LSTM (single layer, one direction).
+layer = LQLSTM(input_size=8, hidden_size=4, n_qubits=4)
+
+x = torch.randn(6, 2, 8)              # (seq_len, batch, input_size)
+output, (h_n, c_n) = layer(x)
+print(output.shape)                  # torch.Size([6, 2, 4])
+print(h_n.shape)                     # torch.Size([1, 2, 4])
+```
+
+A complete training loop on a small synthetic task is in
+[`examples/quickstart.py`](examples/quickstart.py).
+
+## Two models: `QLSTM` and `LQLSTM`
+
+The gates are variational quantum circuits that act on `n_qubits` wires. The
+difference is how the data reaches those wires.
+
+- **`LQLSTM`** (linear-enhanced, the paper’s model, recommended). A classical
+  linear layer projects `[x_t, h_{t-1}]` down to `n_qubits`, the circuit
+  processes it, and a second linear layer projects the measurements up to
+  `hidden_size`. Input and hidden sizes are therefore free to choose.
+- **`QLSTM`** with `linear_enhanced=False` (classic quantum LSTM). The circuit
+  acts directly on `[x_t, h_{t-1}]`, which requires
+  `n_qubits == input_size + hidden_size`.
+
+`QLSTM` defaults to `linear_enhanced=True`, so `QLSTM(...)` and `LQLSTM(...)`
+build the same model; use `LQLSTM` when you want the name to be explicit.
+
+```python
+from qlstm import QLSTM
+
+# Classic variant: circuit acts on the raw concatenation, so the dimensions
+# must line up (4 + 3 == 7).
+layer = QLSTM(input_size=4, hidden_size=3, n_qubits=7, linear_enhanced=False)
+```
+
+## API
+
+| Object | Purpose |
+| --- | --- |
+| `QLSTM` | Sequence layer with a `torch.nn.LSTM`-style interface. |
+| `LQLSTM` | `QLSTM` fixed to the linear-enhanced model. |
+| `QLSTMCell` | One recurrent step, for custom loops. |
+| `make_vqc` | Build the underlying variational circuit as a `torch` layer. |
+
+Key constructor arguments (shared by `QLSTM`, `LQLSTM`, and `QLSTMCell`):
+
+| Argument | Default | Meaning |
+| --- | --- | --- |
+| `n_qubits` | `4` | Wires per gate circuit. |
+| `n_qlayers` | `1` | Depth of the entangling ansatz. |
+| `ansatz` | `"basic"` | `"basic"` ([`BasicEntanglerLayers`](https://docs.pennylane.ai/en/stable/code/api/pennylane.BasicEntanglerLayers.html)) or `"strong"` ([`StronglyEntanglingLayers`](https://docs.pennylane.ai/en/stable/code/api/pennylane.StronglyEntanglingLayers.html), more expressive). |
+| `rotation` | `"Y"` | Angle-embedding axis (`"X"`, `"Y"`, or `"Z"`). |
+| `input_activation` | `"arctan"` | Angle activation before embedding; bounds the encoded angles as in the paper. `"tanh"`, `None`, or any callable also work. |
+| `backend` | `"default.qubit"` | Any PennyLane device, e.g. `"lightning.qubit"`. |
+| `diff_method` | `"backprop"` | Differentiation method; `lightning.qubit` switches to `"adjoint"` automatically. |
+| `batch_first` | `False` | Use `(batch, seq, feature)` instead of `(seq, batch, feature)`. |
+
+## How it works
+
+A classical LSTM computes each gate as an affine map followed by a sigmoid or
+tanh. `qlstm` replaces the affine map with an encode-entangle-measure quantum
+block: the input is angle-embedded on `n_qubits` wires, an entangling ansatz with
+trainable weights is applied, and `⟨Z⟩` is measured on every wire. On the
+`default.qubit` simulator the circuit is differentiated by backpropagation, so
+gradients reach both the circuit weights and the layer inputs, and
+backpropagation through time works across the recurrent steps.
+
+## Reproduce the paper
+
+The original experiment — carbon price forecasting on European Union carbon
+market data — is preserved under [`src/`](src/) with its dataset in
+[`data/`](data/). It trains the quantum and classical baselines through
+[PyTorch Lightning](https://lightning.ai/) and logs to
+[Weights & Biases](https://wandb.ai/).
+
+```bash
+pip install -r requirement.txt          # pinned versions for the paper code
+
+python src/train.py --batch_size 16 --model_name xx-QLSTM --accelerator cpu --n_qubits 4
+python src/train.py --batch_size 16 --model_name QLSTM   --accelerator cpu --n_qubits 4
+python src/run_lstm.py --seed 1 --data period2 --hidden_dim 3
+```
+
+The `src/` code targets the pinned dependencies in `requirement.txt`; the
+installable `qlstm` package targets current PyTorch and PennyLane.
+
+<details>
+<summary>Dataset details</summary>
+
+The dataset covers the European Union carbon market from 2014-01-01 to
+2020-12-31.
+
+Column names:
+
+- `Price`: carbon price
+- `High`: highest price
+- `Low`: lowest price
+- `Open`: opening price
+- `Vol`: trading volume
+- `Week`: week number of the year
+- `Year`: year of the day
+- `t`: remaining days to the last open day of the year
+
+CSV files:
+
+- `x_3d.csv`: features of the last day, the day before, and the same weekday last week.
+- `x_5d.csv`: features of the last five days.
+
+Periods:
+
+- `period1`: 2014-01-01 to 2016-12-31.
+- `period2`: 2017-01-01 to 2020-12-31.
+
+</details>
+
+## Citation
+
+If you use this software, please cite the paper:
+
+```bibtex
 @article{cao2023linear,
   title={Linear-layer-enhanced quantum long short-term memory for carbon price forecasting},
   author={Cao, Yuji and Zhou, Xiyuan and Fei, Xiang and Zhao, Huan and Liu, Wenxuan and Zhao, Junhua},
@@ -32,61 +168,14 @@ This code implements the quantum LSTM for price forecasting problems. By changin
 }
 ```
 
-### Dependencies
-python == 3.8
+GitHub’s “Cite this repository” button reads the machine-readable
+[`CITATION.cff`](CITATION.cff).
 
-Use requirements.txt to install the dependencies for reproducing the code. 
+## Questions
 
-```bash
-pip install -r requirement.txt
-```
+Open an [issue](https://github.com/TravisCao/Quantum-LSTM/issues) or contact
+travisyjcao@gmail.com.
 
-The experimental result is stored by [WandB](https://wandb.ai/site). You need to register your account first. See the quickstart of WandB [here](https://docs.wandb.ai/quickstart).
+## License
 
-### Executing program
-
-* `src/train.py` is the main entry for training different models.
-* `config.yaml` sets the configuration of data, model and training pipelines.
-* `data_utils.py` contains data modules of the dataset including data preprocessing etc.
-* `utils.py` includes utility functions.
-* `models/qlstm.py` and `models/xx_qlstm.py` implement the quantum-classical models.
-
-```bash
-# train QLSTM
-python src/train.py --batch_size 16 --model_name QLSTM --devices 16 --accelerator cpu --n_qubits 4 
-# train L-QLSTM
-python src/train.py --batch_size 16 --model_name xx-QLSTM --devices 16 --accelerator cpu --n_qubits 4 
-# train LSTM
-python src/run_lstm.py --seed 1 --data period2 --hidden_dim 3 
-```
-
-## Data
-
-This is the dataset of EU carbon market from 2014.01.01 to 2020.12.31.
-
-### Column Names
-
-* `Price`: carbon price
-* `High`: highest price
-* `Low`: lowest price
-* `Open`: opening price
-* `Vol`: trading volume
-* `Week`: week number of the year
-* `Year`: year of the day
-* `t`: remaining days to the last open day of the year
-
-### CSV files
-
-`x_3d.csv` contains features of last day, day before last day, and weekday of last week.
-
-`x_5d.csv` contains features of last five days.
-
-### Period
-
-`period1` contains data during 2014.01.01 - 2016.12.31.
-
-`period2` contains data from 2017.01.01 - 2020.12.31.
-
-## Help
-
-If you have any questions or need further clarification, please feel free to reach out to me at travisyjcao@gmail.com.
+[MIT](LICENSE).
