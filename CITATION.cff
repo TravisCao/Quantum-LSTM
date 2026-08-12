@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "qlstm: Quantum LSTM layers for PyTorch"
+type: software
+authors:
+  - family-names: Cao
+    given-names: Yuji
+  - family-names: Zhou
+    given-names: Xiyuan
+  - family-names: Fei
+    given-names: Xiang
+  - family-names: Zhao
+    given-names: Huan
+  - family-names: Liu
+    given-names: Wenxuan
+  - family-names: Zhao
+    given-names: Junhua
+repository-code: "https://github.com/TravisCao/Quantum-LSTM"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Linear-layer-enhanced quantum long short-term memory for carbon price forecasting"
+  authors:
+    - family-names: Cao
+      given-names: Yuji
+    - family-names: Zhou
+      given-names: Xiyuan
+    - family-names: Fei
+      given-names: Xiang
+    - family-names: Zhao
+      given-names: Huan
+    - family-names: Liu
+      given-names: Wenxuan
+    - family-names: Zhao
+      given-names: Junhua
+  journal: "Quantum Machine Intelligence"
+  year: 2023
+  volume: 5
+  issue: 2
+  start: 26
+  doi: "10.1007/s42484-023-00115-2"
