@@ -117,3 +117,62 @@ def test_learns_a_simple_sequence_task():
     for _ in range(40):
         last = step()
     assert last < first * 0.5, f"loss did not fall enough: {first:.4f} -> {last:.4f}"
+
+
+def test_stacked_output_and_state_shapes():
+    layer = QLSTM(input_size=6, hidden_size=4, n_qubits=4, num_layers=3)
+    out, (h_n, c_n) = layer(torch.randn(5, 2, 6))
+    assert out.shape == (5, 2, 4)  # top-layer sequence
+    assert h_n.shape == (3, 2, 4)  # (num_layers, batch, hidden)
+    assert c_n.shape == (3, 2, 4)
+
+
+def test_stacked_gradients_flow_to_every_layer():
+    layer = QLSTM(input_size=4, hidden_size=3, n_qubits=4, num_layers=2)
+    out, _ = layer(torch.randn(3, 2, 4))
+    out.sum().backward()
+    seen_layers = set()
+    for name, p in layer.named_parameters():
+        assert p.grad is not None, f"no grad for {name}"
+        assert torch.isfinite(p.grad).all(), f"non-finite grad for {name}"
+        if name.startswith("cells."):
+            seen_layers.add(name.split(".")[1])
+    assert seen_layers == {"0", "1"}, "both stacked layers must be trained"
+
+
+def test_stacked_accepts_initial_state():
+    layer = QLSTM(input_size=4, hidden_size=3, n_qubits=4, num_layers=2)
+    h0 = torch.randn(2, 2, 3)  # (num_layers, batch, hidden)
+    c0 = torch.randn(2, 2, 3)
+    out, (h_n, c_n) = layer(torch.randn(3, 2, 4), (h0, c0))
+    assert out.shape == (3, 2, 3)
+    assert h_n.shape == (2, 2, 3)
+
+
+def test_wrong_initial_state_layer_count_raises():
+    layer = QLSTM(input_size=4, hidden_size=3, n_qubits=4, num_layers=2)
+    with pytest.raises(ValueError, match="num_layers"):
+        layer(torch.randn(3, 2, 4), (torch.randn(1, 2, 3), torch.randn(1, 2, 3)))
+
+
+def test_dropout_is_eval_deterministic():
+    layer = QLSTM(
+        input_size=4, hidden_size=3, n_qubits=4, num_layers=2, dropout=0.5
+    )
+    x = torch.randn(4, 2, 4)
+    layer.eval()
+    a, _ = layer(x)
+    b, _ = layer(x)
+    assert torch.allclose(a, b)
+
+
+def test_cell_property_is_first_cell():
+    layer = QLSTM(input_size=4, hidden_size=3, n_qubits=4, num_layers=2)
+    assert layer.cell is layer.cells[0]
+
+
+def test_invalid_num_layers_and_dropout_raise():
+    with pytest.raises(ValueError, match="num_layers"):
+        QLSTM(input_size=4, hidden_size=3, n_qubits=4, num_layers=0)
+    with pytest.raises(ValueError, match="dropout"):
+        QLSTM(input_size=4, hidden_size=3, n_qubits=4, dropout=1.0)

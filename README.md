@@ -45,7 +45,9 @@ print(h_n.shape)                     # torch.Size([1, 2, 4])
 ```
 
 A complete training loop on a small synthetic task is in
-[`examples/quickstart.py`](examples/quickstart.py).
+[`examples/quickstart.py`](examples/quickstart.py). A fair side-by-side against a
+classical `torch.nn.LSTM` on the same task is in
+[`examples/benchmark_vs_classical.py`](examples/benchmark_vs_classical.py).
 
 ## Two models: `QLSTM` and `LQLSTM`
 
@@ -71,6 +73,26 @@ from qlstm import QLSTM
 layer = QLSTM(input_size=4, hidden_size=3, n_qubits=7, linear_enhanced=False)
 ```
 
+## Stacking layers
+
+Set `num_layers` to stack recurrent layers, exactly as in `torch.nn.LSTM`. Each
+layer reads the hidden-state sequence of the layer below. `output` is the top
+layer's sequence, and `h_n`/`c_n` gather the final state of every layer with
+shape `(num_layers, batch, hidden_size)`. A non-zero `dropout` applies dropout to
+the output of each layer except the last.
+
+```python
+import torch
+from qlstm import LQLSTM
+
+layer = LQLSTM(input_size=8, hidden_size=4, n_qubits=4, num_layers=2, dropout=0.1)
+
+x = torch.randn(6, 2, 8)
+output, (h_n, c_n) = layer(x)
+print(output.shape)                  # torch.Size([6, 2, 4])
+print(h_n.shape)                     # torch.Size([2, 2, 4])
+```
+
 ## API
 
 | Object | Purpose |
@@ -80,12 +102,15 @@ layer = QLSTM(input_size=4, hidden_size=3, n_qubits=7, linear_enhanced=False)
 | `QLSTMCell` | One recurrent step, for custom loops. |
 | `make_vqc` | Build the underlying variational circuit as a `torch` layer. |
 
-Key constructor arguments (shared by `QLSTM`, `LQLSTM`, and `QLSTMCell`):
+Key constructor arguments (shared by `QLSTM`, `LQLSTM`, and `QLSTMCell`, except
+`num_layers` and `dropout`, which apply to the sequence layers only):
 
 | Argument | Default | Meaning |
 | --- | --- | --- |
 | `n_qubits` | `4` | Wires per gate circuit. |
 | `n_qlayers` | `1` | Depth of the entangling ansatz. |
+| `num_layers` | `1` | Number of stacked recurrent layers (`QLSTM`/`LQLSTM`). |
+| `dropout` | `0.0` | Dropout on the output of each layer except the last (`QLSTM`/`LQLSTM`). |
 | `ansatz` | `"basic"` | `"basic"` ([`BasicEntanglerLayers`](https://docs.pennylane.ai/en/stable/code/api/pennylane.BasicEntanglerLayers.html)) or `"strong"` ([`StronglyEntanglingLayers`](https://docs.pennylane.ai/en/stable/code/api/pennylane.StronglyEntanglingLayers.html), more expressive). |
 | `rotation` | `"Y"` | Angle-embedding axis (`"X"`, `"Y"`, or `"Z"`). |
 | `input_activation` | `"arctan"` | Angle activation before embedding; bounds the encoded angles as in the paper. `"tanh"`, `None`, or any callable also work. |
